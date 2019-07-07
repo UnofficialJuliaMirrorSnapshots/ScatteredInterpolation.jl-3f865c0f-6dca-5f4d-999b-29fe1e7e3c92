@@ -12,10 +12,10 @@ struct Shepard{T} <: ShepardType where T <: Real
 end
 Shepard() = Shepard(2)
 
-struct ShepardInterpolant{F, T1, T2, N, M} <: ScatteredInterpolant
+struct ShepardInterpolant{T1, T2, F, M} <: ScatteredInterpolant where {T1 <: AbstractArray, T2 <: AbstractMatrix{<:Real}}
 
-    data::Array{T1,N}
-    points::Array{T2,2}
+    data::T1
+    points::T2
     idw::F
     metric::M
 end
@@ -62,6 +62,6 @@ function evaluatePoint(idw::Shepard,
                        d::AbstractVector) where {N}
 
     # Compute weigths and return the weighted sum
-    w = d.^idw.P
-    value = sum(w.*data, 1)./sum(w)
+    w = 1.0./(d.^idw.P)
+    value = sum(w.*data, dims = 1)./sum(w)
 end
